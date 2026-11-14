@@ -9,6 +9,7 @@ import { prefs, useI18n } from "@/lib/i18n";
 import { signOut, useSession } from "@/lib/auth";
 import { useDb } from "@/lib/store";
 import type { Currency } from "@/types/models";
+import { ThemeSwitcher } from "@/design-system/theme/ThemeSwitcher";
 
 type NavLink = { to: string; label: string; desc: string };
 export function useMegaMenu() {
@@ -97,7 +98,7 @@ function Header() {
           </ul>
         </nav>
         <div className="ml-auto hidden items-center gap-2 xl:flex">
-          <div className="m212-ref-pill"><PrefSelectors compact /></div>
+          <ThemeSwitcher compact /><div className="m212-ref-pill"><PrefSelectors compact /></div>
           {session ? <ButtonLink to={portalHome(session.role) as "/client/dashboard"} variant="outline" size="md"><User className="h-4 w-4" />{t("nav.account")}<ChevronDown className="h-3 w-3" /></ButtonLink> : <ButtonLink to="/login" variant="outline" size="md"><User className="h-4 w-4" />{fr ? "Mon compte" : "My account"}<ChevronDown className="h-3 w-3" /></ButtonLink>}
           {session ? <Button variant="ghost" size="sm" onClick={signOut}>{t("nav.logout")}</Button> : <ButtonLink to="/login" variant="ghost" size="sm">{t("nav.login")}</ButtonLink>}
         </div>
@@ -108,7 +109,7 @@ function Header() {
         <div className="fixed inset-0 z-50 bg-[#10214a]/55 xl:hidden" onClick={() => setMobile(false)}>
           <div role="dialog" aria-label="Menu" className="animate-rise ml-auto h-full w-[88%] max-w-sm overflow-y-auto bg-white p-5" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between"><Logo /><button type="button" aria-label="Close menu" onClick={() => setMobile(false)} className="rounded p-2 hover:bg-sky-50"><X className="h-5 w-5" /></button></div>
-            <PrefSelectors compact />
+            <div className="mb-3 flex items-center gap-2"><ThemeSwitcher compact /><PrefSelectors compact /></div>
             {groups.map((g) => <div key={g.id} className="mt-5"><p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">{g.label}</p>{g.links.map(l => <HrefLink key={l.to} href={l.to} className="block rounded-xl px-3 py-3 text-sm font-semibold text-[#101d45] hover:bg-sky-50">{l.label}</HrefLink>)}</div>)}
             <div className="mt-5 grid gap-2"><ButtonLink to="/pricing" variant="outline">{t("nav.pricing")}</ButtonLink><ButtonLink to="/support" variant="outline">{t("nav.support")}</ButtonLink>{session ? <><ButtonLink to={portalHome(session.role) as "/client/dashboard"}>{t("nav.account")}</ButtonLink><Button variant="ghost" onClick={signOut}>{t("nav.logout")}</Button></> : <><ButtonLink to="/login" variant="outline">{t("nav.login")}</ButtonLink><ButtonLink to="/register" variant="brand">{t("nav.register")}</ButtonLink></>}</div>
           </div>
