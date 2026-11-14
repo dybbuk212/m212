@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
     if (error) return json(req, 500, { error: "provider_save_failed" });
     await admin.from("cms_audit_logs").insert({
       actor_id: userData.user.id, action: "provider.configuration.saved",
-      entity_type: "provider_connection", entity_id: data.id,
+      entity_type: "provider_connection", entity_id: String(data.id),
       metadata: { category, provider_key: providerKey, environment, secret_updated: Boolean(secret) },
     });
     return json(req, 200, { connection: data, secret_saved: Boolean(secret), message: "Configuration saved. Connection is not verified until a provider-specific adapter test succeeds." });
