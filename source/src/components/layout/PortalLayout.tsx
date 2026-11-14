@@ -12,6 +12,7 @@ import { DemoBanner, PrefSelectors } from "./SiteLayout";
 import { demoSignIn, signOut, useSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types/models";
+import { ThemeSwitcher } from "@/design-system/theme/ThemeSwitcher";
 
 type Item = { to: string; label: string; icon: ComponentType<{ className?: string }> };
 type Group = { title?: string; items: Item[] };
@@ -130,7 +131,7 @@ export function PortalLayout({ area }: { area: keyof typeof PORTAL_NAV }) {
           <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b bg-card/95 px-4 backdrop-blur">
             <button type="button" className="rounded p-2 hover:bg-muted lg:hidden" aria-label="Open navigation" onClick={() => setOpen(true)}><MenuIcon className="h-5 w-5" /></button>
             <div className="flex-1 text-sm text-muted-foreground"><span className="hidden sm:inline">Signed in (demo) as </span><strong className="text-foreground">{session.name}</strong></div>
-            <div className="hidden sm:block"><PrefSelectors /></div>
+            <ThemeSwitcher compact /><div className="hidden sm:block"><PrefSelectors /></div>
             <ButtonLink to="/" variant="ghost" size="sm">Site</ButtonLink>
             <Button variant="outline" size="sm" onClick={signOut}><LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sign out</span></Button>
           </header>
