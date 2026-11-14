@@ -1,5 +1,5 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, Globe, Menu as MenuIcon, ShoppingCart, User, X } from "lucide-react";
+import { ChevronDown, Globe, HardDrive, LifeBuoy, Menu as MenuIcon, Server, ShieldCheck, ShoppingCart, User, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Logo } from "@/components/Logo";
@@ -35,39 +35,6 @@ export function useMegaMenu() {
   return groups;
 }
 
-function MegaMenu() {
-  const groups = useMegaMenu();
-  const [open, setOpen] = useState<string | null>(null);
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  useEffect(() => setOpen(null), [path]);
-  return (
-    <nav aria-label="Main" className="hidden lg:block" onMouseLeave={() => setOpen(null)}>
-      <ul className="flex items-center gap-1">
-        {groups.map((g) => (
-          <li key={g.id} className="relative" onMouseEnter={() => setOpen(g.id)}>
-            <button type="button" aria-expanded={open === g.id} onClick={() => setOpen(open === g.id ? null : g.id)} className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted">
-              {g.label}<ChevronDown className="h-3.5 w-3.5" aria-hidden />
-            </button>
-            {open === g.id && (
-              <div className="absolute left-0 top-full z-40 w-80 pt-2">
-                <div className="animate-rise rounded-lg border bg-card p-2 shadow-pop">
-                  {g.links.map((l) => (
-                    <HrefLink key={l.to} href={l.to} className="block rounded-md px-3 py-2.5 hover:bg-muted">
-                      <span className="block text-sm font-semibold text-brand-navy">{l.label}</span>
-                      <span className="block text-xs text-muted-foreground">{l.desc}</span>
-                    </HrefLink>
-                  ))}
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-        <li><Link to="/pricing" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted">{useI18n().t("nav.pricing")}</Link></li>
-        <li><Link to="/support" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted">{useI18n().t("nav.support")}</Link></li>
-      </ul>
-    </nav>
-  );
-}
 
 export function PrefSelectors({ compact = false }: { compact?: boolean }) {
   const { locale, currency, setLocale, setCurrency } = useI18n();
