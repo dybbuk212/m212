@@ -1,0 +1,2 @@
+[functions.cms-publish-scheduler]
+verify_jwt = false
