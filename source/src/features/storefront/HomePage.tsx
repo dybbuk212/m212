@@ -8,7 +8,7 @@ import { effectiveRegisterPrice } from "@/lib/domain";
 import { DEMO_TESTIMONIALS, DomainSearchBox, Faq, PlanGrid, Section, SectionHeading, ServerVisual, Testimonials, TrustStrip, PriceFrom } from "./shared";
 
 export function HomePage() {
-  const { t, locale } = useI18n();
+  const { locale } = useI18n();
   const fr = locale === "fr";
   const data = useDb();
   const money = useMoney();
