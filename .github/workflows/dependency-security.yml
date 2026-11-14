@@ -1,25 +1,92 @@
-name: M212 dependency security
+name: M212 dependency security and Cloudflare build
+
 on:
   push:
-    paths: ["source/package.json", "source/package-lock.json", ".github/workflows/dependency-security.yml"]
+    branches: ["main", "security/fix-dependabot-vitest-tinypool"]
+    paths:
+      - "source/**"
+      - ".github/workflows/dependency-security.yml"
   pull_request:
-    paths: ["source/package.json", "source/package-lock.json", ".github/workflows/dependency-security.yml"]
+    paths:
+      - "source/**"
+      - ".github/workflows/dependency-security.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: m212-security-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  audit:
+  security-build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: source
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: source/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - run: npm ls vitest @vitest/mocker tinypool
-      - run: npm audit
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+      - name: Generate a fresh npm lockfile
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Install exact locked dependency tree
+        run: npm ci --no-audit --no-fund
+      - name: Verify patched dependency versions
+        run: |
+          node <<'NODE'
+          const { execFileSync } = require('node:child_process');
+          const tree = JSON.parse(execFileSync('npm', ['ls', '--all', '--json'], { encoding: 'utf8' }));
+          const compare = (a, b) => {
+            const aa = a.split('.').map(Number), bb = b.split('.').map(Number);
+            for (let i = 0; i < 3; i++) if ((aa[i] || 0) !== (bb[i] || 0)) return (aa[i] || 0) - (bb[i] || 0);
+            return 0;
+          };
+          const found = { vitest: [], '@vitest/mocker': [], tinypool: [] };
+          function walk(deps) {
+            for (const [name, item] of Object.entries(deps || {})) {
+              if (found[name]) found[name].push(item.version);
+              walk(item.dependencies);
+            }
+          }
+          walk(tree.dependencies);
+          for (const [name, versions] of Object.entries(found)) {
+            if (name === 'tinypool' && versions.length === 0) continue;
+            if (versions.length === 0) throw new Error(name + ' is missing from the installed dependency tree');
+            const floor = name === 'tinypool' ? '2.1.2' : '4.1.12';
+            for (const version of versions) {
+              if (compare(version, floor) < 0) throw new Error(name + ' version ' + version + ' is below ' + floor);
+            }
+            console.log(name + ': ' + versions.join(', '));
+          }
+          NODE
+      - name: npm audit
+        run: npm audit --audit-level=moderate
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+      - name: Commit regenerated lockfile to branch
+        if: success() && github.event_name == 'push' || success() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add source/package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(deps): regenerate patched npm lockfile"
+            git push origin HEAD:${{ github.head_ref || github.ref_name }}
+          fi
+      - name: Upload regenerated lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: m212-patched-package-lock
+          path: source/package-lock.json
+          if-no-files-found: error
+          retention-days: 14
