@@ -1,45 +1,33 @@
-# Cloudflare Pages — M212
+# Deploying M212.MA to Cloudflare Pages — Git integration
 
-## Required Pages project settings
+This repository contains the M212 frontend in `source/`. The static frontend is deployed to Cloudflare Pages. The registrar/Plesk backend is a separate service and must not run inside the static Pages build.
 
-Configure these values in the Cloudflare Pages project:
+## Cloudflare Pages settings
 
-- **Production branch:** `main`
-- **Root directory:** `source`
-- **Build command:** `npm run build`
-- **Build output directory:** `dist`
-- **Node.js version:** `22.22.2`
+- Repository: `dybbuk212/m212`
+- Production branch: `main` (after merging the reviewed security PR)
+- Root directory: `source`
+- Framework preset: Vite
+- Build command: `npm ci --no-audit --no-fund && npm run build`
+- Build output directory: `dist`
+- Node.js: 22.22.2 or newer 22.x
 
-The application and its lockfile are located under `source/`. Do not set the root directory to the repository root.
+The security branch temporarily removes the old vulnerable lockfile. Its GitHub Actions workflow regenerates a clean npm lockfile using a connected GitHub-hosted runner, verifies patched dependency floors, runs `npm audit`, typecheck, tests and production build, then commits the generated lockfile back to the branch. Once that generated lockfile is present and the PR is merged, use the `npm ci` build command above.
 
-## Runtime pin
+## Frontend environment variables
 
-The application declares Node.js `>=22.22.2` in `source/package.json`. The `source/.nvmrc` file pins the same exact version.
-
-If the Pages build environment does not honor `.nvmrc`, set the Cloudflare Pages environment variable:
+Only public, non-secret configuration belongs in Cloudflare Pages. Example:
 
 ```text
-NODE_VERSION=22.22.2
+VITE_API_BASE_URL=https://api.m212.ma
 ```
 
-Apply the setting to the appropriate Preview and Production environments, then trigger a new deployment.
+Never put Openprovider credentials, Plesk credentials, database passwords, JWT secrets, SMTP credentials, payment API secrets or private keys in `VITE_*` variables.
 
-## Build
+## Custom domain
 
-From the `source/` directory:
+In Cloudflare Pages → project → Custom domains, add `m212.ma` and optionally `www.m212.ma`. Check existing DNS records and mail-related MX/TXT records before making nameserver changes.
 
-```bash
-npm ci
-npm run typecheck
-npm test
-npm run build
-```
+## Release boundary
 
-Vite writes the production output to `source/dist`; therefore the Pages output directory, relative to the configured root, is `dist`.
-
-## Notes
-
-- The current package is a frontend demo release. No production provider credentials are required for its demo build.
-- Keep Supabase, registrar, payment and infrastructure credentials out of the frontend bundle.
-- A Git commit cannot change the Cloudflare dashboard's Root directory or environment variables. Verify those project settings separately.
-- Do not mark a deployment successful until the Cloudflare Pages build completes and the deployed preview is checked.
+The existing frontend V2.0 is a frontend demo. Domain search, payment, orders and provisioning must not be considered live until the secure backend integrations, provider contracts, authentication, payment confirmation, provisioning reconciliation and production tests are complete.

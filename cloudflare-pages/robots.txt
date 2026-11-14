@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /client/
+Disallow: /reseller/
+Disallow: /cart
+Disallow: /checkout
+
+Sitemap: https://m212.ma/sitemap.xml
