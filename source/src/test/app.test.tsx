@@ -20,7 +20,7 @@ beforeEach(() => { db.reset(); clearCart(); sessionStore.set(null); prefs.set({ 
 describe("storefront", () => {
   it("home page renders with search and navigation", async () => {
     await renderAt("/");
-    expect(await screen.findByRole("heading", { level: 1, name: /Domains, hosting and cloud/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: /Your online presence starts with a domain name/ })).toBeInTheDocument();
     expect(screen.getByRole("search")).toBeInTheDocument();
     expect(screen.getAllByText(/DEMO MODE/).length).toBeGreaterThan(0);
   });
@@ -49,7 +49,7 @@ describe("storefront", () => {
     const user = userEvent.setup();
     await renderAt("/");
     await user.selectOptions((await screen.findAllByLabelText("Language"))[0]!, "fr");
-    expect(await screen.findByRole("heading", { level: 1, name: /Domaines, hébergement et cloud/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: /Votre présence en ligne commence par un nom de domaine/ })).toBeInTheDocument();
   });
   it("unknown routes render the 404 page", async () => {
     await renderAt("/this-does-not-exist");
