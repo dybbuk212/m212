@@ -48,5 +48,30 @@
 - Re-run GTmetrix/Lighthouse on the deployed preview; target no regression from supplied baseline (LCP <= 763ms, TBT <= 0ms, CLS <= 0.01, Performance >= 99%, Structure >= 100% where test conditions are comparable).
 - Merge only after CI passes. Verify Cloudflare deployment separately; do not equate a successful build with deployment.
 
+
+## Approved visual reference — canonical homepage
+The owner-approved reference image is the target for the **customer-facing homepage**, not merely inspiration for a generic hybrid theme.
+
+### Homepage composition to implement
+- A single, slim, rounded white navigation bar with the retained M212 logo; primary menus for Domains, Hosting, Servers, Security & Email, Pricing and Support; language selector, customer account menu and sign-in action.
+- A bright sky-blue / soft-white / pale-lavender hero with restrained abstract cloud/server motifs.
+- A large, high-contrast headline focused on finding a domain, with the key word/phrase highlighted in the retained brand red.
+- A short supporting line beneath the headline.
+- A wide, pill-shaped domain search control as the primary conversion action, with a clear search/generate button integrated into the field.
+- A right-side visual illustrating the hosting/server ecosystem and a welcoming customer context. Prefer optimized local/vector artwork or CSS illustration; do not introduce heavy third-party image requests.
+- Responsive behavior: collapse navigation cleanly on mobile, keep domain search prominent, stack hero content without clipping, and avoid layout shifts.
+
+### Platform-wide design system derived from the homepage
+After the homepage is approved, extend its visual language consistently to all public pages, domain results and pricing, product detail pages, authentication, cart/checkout, customer and reseller portals, admin and Super Admin. Reuse the same tokens, typography, spacing, controls, icon treatment, surfaces, status colors and responsive rules; adapt density and navigation to each role rather than copying the marketing hero into dashboards.
+
+### Implementation sequence and acceptance
+1. Finish the homepage to match the approved reference and verify the existing domain search path still works.
+2. Apply shared components/tokens to public catalogue, domain results, pricing and checkout.
+3. Apply role-appropriate shells and shared components to customer/reseller portals.
+4. Apply the same system to admin and Super Admin, preserving security boundaries and sandbox-only provider controls.
+5. Run route, role, accessibility, responsive, functional and performance regression checks.
+
+Do not treat the homepage as approved until its rendered preview has been reviewed against the reference at desktop and mobile sizes. Do not declare platform-wide UX complete until all route groups above have been audited.
+
 ## Current increment
 This PR establishes the implementation contract and applies a small, isolated hybrid-surface refinement to the existing storefront product cards. It intentionally does not replace route or business logic. Subsequent waves should be separate reviewable PRs with screenshots and measured performance evidence.
