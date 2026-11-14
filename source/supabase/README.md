@@ -10,6 +10,7 @@ The M212 Supabase project currently has four recorded migrations:
 2. `20261114081049_m212_unified_cms_platform_foundation.sql` — creates the unified CMS, organization/membership, provider registry, Vault RPCs, sandbox provider queue, provisioning queue, event/audit tables, storage bucket, editorial workflow, and baseline RLS.
 3. `20261114081252_m212_security_performance_hardening.sql` — moves the CMS role lookup into the private schema, locks trigger-only RPCs, splits overlapping policies, explicitly denies browser access to the provider worker queue, and adds foreign-key indexes.
 4. `20261114081313_m212_auth_role_policy_cleanup.sql` — removes deprecated `auth.role()` use from the CMS trigger and finalizes published-content RLS.
+5. `20261114081536_m212_vault_rpc_auth_claim_cleanup.sql` — uses the signed JWT role claim for service-role-only Vault RPC authorization.
 
 The migration files mirror the SQL recorded by the remote Supabase migration history. Do not restore the retired pre-consolidation migrations: they contained incompatible duplicate definitions for `provider_connections` and `provisioning_jobs`, and the original CMS migration had malformed PL/pgSQL dollar delimiters.
 
