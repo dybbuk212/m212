@@ -10,7 +10,7 @@ reseller portal, administrator back-office and CMS.
 
 ## Requirements
 
-- Node.js 20 or newer (tested with Node 22) and npm 10+
+- Node.js 22.22.2 or newer (22.x) and npm 10+
 - No accounts, API keys, Git repository or hosting platform are required to build.
 
 ## Quick start
