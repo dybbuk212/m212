@@ -42,3 +42,8 @@ Target WCAG 2.2 AA. Support keyboard navigation, visible focus, semantic landmar
 ## Non-regression
 
 Preserve current TanStack Router paths, domain/cart/checkout flows, locale/currency behavior, demo-mode disclosures, Supabase functions, provider sandbox safeguards and Cloudflare Pages build root. Do not claim production authentication or real provider provisioning where the current app explicitly remains a frontend demo.
+
+
+## Architecture alignment
+
+The complete repository target and implementation gates are defined in [M212 Complete Repository Architecture](../architecture/M212_COMPLETE_REPOSITORY_ARCHITECTURE.md). This UX/UI document governs visual and interaction behavior; it does not authorize route changes, backend rewrites or placeholder dashboards.
