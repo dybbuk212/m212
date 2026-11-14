@@ -3,3 +3,7 @@ verify_jwt = false
 
 [functions.provider-admin]
 verify_jwt = true
+
+[functions.provider-worker]
+# The worker validates x-provider-worker-secret itself.
+verify_jwt = false
