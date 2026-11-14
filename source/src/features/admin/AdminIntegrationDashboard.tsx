@@ -2,7 +2,7 @@ import { useEffect,useMemo,useState } from "react";
 import { Activity,CheckCircle2,CircleAlert,Cloud,Cpu,CreditCard,Globe2,KeyRound,Mail,Plus,RefreshCw,Server,ShieldCheck,TestTube2,Wifi,ClipboardList,LockKeyhole } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { toast } from "sonner";
-import { Alert,Badge,Button,Card,PageHeader,Input,Select,Textarea,Field,Table,Th,Td } from "@/components/ui";
+import { Alert,Badge,Button,Card,PageHeader,Input,Select,Field,Table,Th,Td } from "@/components/ui";
 import { useSeo } from "@/lib/seo";
 
 type Category="registrar"|"plesk"|"hypervisor"|"dns"|"payment"|"email"|"storage";
