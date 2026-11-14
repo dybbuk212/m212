@@ -206,6 +206,13 @@ with check (bucket_id = 'm212-cms-media' and public.cms_has_role(array['super_ad
 create policy cms_storage_staff_delete on storage.objects for delete to authenticated
 using (bucket_id = 'm212-cms-media' and public.cms_has_role(array['super_admin','admin','editor','media_manager']));
 
+
+-- Explicit API grants; RLS remains the row-level authorization boundary.
+grant select on public.cms_pages, public.cms_posts, public.cms_categories, public.cms_menus, public.cms_media to anon, authenticated;
+grant insert, update, delete on public.cms_pages, public.cms_posts, public.cms_categories, public.cms_menus, public.cms_media to authenticated;
+grant select, insert on public.cms_revisions to authenticated;
+grant usage, select on sequence public.cms_audit_logs_id_seq to authenticated;
+
 -- Do not grant browser roles write access to the append-only audit table.
 revoke insert, update, delete on public.cms_audit_logs from anon, authenticated;
 grant select on public.cms_audit_logs to authenticated;
