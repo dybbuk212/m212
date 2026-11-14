@@ -5,7 +5,7 @@ import { useI18n, useMoney } from "@/lib/i18n";
 import { useSeo } from "@/lib/seo";
 import { useDb } from "@/lib/store";
 import { effectiveRegisterPrice } from "@/lib/domain";
-import { DEMO_TESTIMONIALS, DomainSearchBox, Faq, PageHero, PlanGrid, Section, SectionHeading, ServerVisual, Testimonials, TrustStrip, PriceFrom } from "./shared";
+import { DEMO_TESTIMONIALS, DomainSearchBox, Faq, PlanGrid, Section, SectionHeading, ServerVisual, Testimonials, TrustStrip, PriceFrom } from "./shared";
 
 export function HomePage() {
   const { t, locale } = useI18n();
@@ -25,12 +25,45 @@ export function HomePage() {
   const popular = [".ma", ".com", ".shop", ".online", ".io", ".net"].map((x) => data.tlds.find((t) => t.tld === x)).filter((x) => x !== undefined);
   return (
     <>
-      <PageHero eyebrow={fr ? "Domaines · Hébergement · Cloud" : "Domains · Hosting · Cloud"} title={t("home.title")} body={t("home.subtitle")} aside={<ServerVisual />}>
-        <DomainSearchBox onDark />
-        <ul className="mt-5 flex flex-wrap gap-2">
-          {popular.map((p) => <li key={p.tld} className="rounded-full border border-on-dark/20 px-3 py-1 text-sm text-on-dark"><strong>{p.tld}</strong> <span className="text-on-dark-muted">{money(effectiveRegisterPrice(p))}</span></li>)}
-        </ul>
-      </PageHero>
+      <section className="m212-home-hero relative isolate overflow-hidden">
+        <div className="m212-home-orbit m212-home-orbit-one" aria-hidden />
+        <div className="m212-home-orbit m212-home-orbit-two" aria-hidden />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:py-20 lg:grid-cols-[1.2fr_.8fr] lg:py-24">
+          <div className="relative z-10 max-w-3xl">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-green/20 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-brand-green shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-brand-green" />
+              {fr ? "Domaines · Hébergement · Cloud" : "Domains · Hosting · Cloud"}
+            </p>
+            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.08] text-brand-navy sm:text-5xl lg:text-6xl">
+              {fr ? <>Votre présence en ligne commence par un <span className="m212-home-highlight">nom de domaine.</span></> : <>Your online presence starts with a <span className="m212-home-highlight">domain name.</span></>}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-xl">
+              {fr ? "Trouvez votre domaine, puis choisissez votre hébergement, serveur et services professionnels au même endroit." : "Find your domain, then choose hosting, servers and professional services in one place."}
+            </p>
+            <div className="mt-8 max-w-3xl rounded-2xl border border-white/80 bg-white/90 p-2 shadow-[0_22px_60px_-30px_rgba(18,39,82,.42)] backdrop-blur">
+              <DomainSearchBox size="lg" />
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-600">
+              <span className="font-semibold">{fr ? "Extensions populaires :" : "Popular extensions:"}</span>
+              {popular.map((p) => <Link key={p.tld} to="/domains/pricing" className="rounded-full border border-white/90 bg-white/65 px-3 py-1.5 font-semibold text-brand-navy transition hover:border-brand-green/50 hover:bg-white">{p.tld}<span className="ml-2 text-xs font-normal text-slate-500">{money(effectiveRegisterPrice(p))}</span></Link>)}
+            </div>
+          </div>
+          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+            <div className="m212-home-art-glow" aria-hidden />
+            <div className="relative rounded-[2rem] border border-white/80 bg-white/55 p-4 shadow-[0_28px_80px_-38px_rgba(18,39,82,.45)] backdrop-blur-sm sm:p-6">
+              <div className="mb-4 flex items-center justify-between rounded-xl border border-white/80 bg-white/80 px-4 py-3">
+                <div><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{fr ? "Votre espace en ligne" : "Your online space"}</p><p className="mt-1 font-display text-lg font-extrabold text-brand-navy">M212.MA</p></div>
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{fr ? "Tout-en-un" : "All-in-one"}</span>
+              </div>
+              <ServerVisual />
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <Link to="/hosting" className="rounded-xl border border-white/80 bg-white/85 p-3 transition hover:-translate-y-0.5"><span className="block text-xs text-slate-500">{fr ? "Hébergement" : "Hosting"}</span><strong className="mt-1 block text-sm text-brand-navy">{fr ? "Lancer un site" : "Launch a website"}</strong></Link>
+                <Link to="/vps" className="rounded-xl border border-white/80 bg-white/85 p-3 transition hover:-translate-y-0.5"><span className="block text-xs text-slate-500">{fr ? "Serveurs" : "Servers"}</span><strong className="mt-1 block text-sm text-brand-navy">VPS & Cloud</strong></Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <TrustStrip />
       <Section>
         <SectionHeading eyebrow={fr ? "Produits" : "Products"} title={fr ? "Tout pour être en ligne" : "Everything to get online"} />
