@@ -4,7 +4,7 @@ This directory contains the **canonical Supabase project configuration and migra
 
 ## Applied remote database migrations
 
-The M212 Supabase project currently has four recorded migrations:
+The M212 Supabase project currently has five recorded migrations:
 
 1. `20261114080955_m212_lock_down_rls_auto_enable.sql` — revokes public/client execution of the pre-existing RLS event-trigger helper.
 2. `20261114081049_m212_unified_cms_platform_foundation.sql` — creates the unified CMS, organization/membership, provider registry, Vault RPCs, sandbox provider queue, provisioning queue, event/audit tables, storage bucket, editorial workflow, and baseline RLS.
