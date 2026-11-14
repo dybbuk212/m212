@@ -18,6 +18,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const apply = () => {
       const resolved = preference === "system" ? (media.matches ? "dark" : "light") : preference;
       document.documentElement.dataset.theme = resolved;
+      document.documentElement.classList.toggle("dark", resolved === "dark");
       document.documentElement.style.colorScheme = resolved;
     };
     apply();
