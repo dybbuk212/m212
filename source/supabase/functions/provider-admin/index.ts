@@ -1,21 +1,27 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("ADMIN_DASHBOARD_ORIGIN") ?? "https://m212.ma",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Vary": "Origin",
+const allowedOrigins = (Deno.env.get("ADMIN_DASHBOARD_ORIGINS") ?? "https://m212.ma,https://m212-1gk.pages.dev")
+  .split(",").map((value) => value.trim()).filter(Boolean);
+const cors = (req: Request) => {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : "null";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Vary": "Origin",
+  };
 };
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" } });
+const json = (req: Request, status: number, body: unknown) =>
+  new Response(JSON.stringify(body), { status, headers: { ...cors(req), "Content-Type": "application/json", "Cache-Control": "no-store" } });
 
 const allowedCategories = new Set(["registrar", "plesk", "hypervisor", "dns", "payment", "email", "storage"]);
 const allowedEnvironments = new Set(["sandbox", "production"]);
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (!["GET", "POST"].includes(req.method)) return json(405, { error: "method_not_allowed" });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
+  if (!["GET", "POST"].includes(req.method)) return json(req, 405, { error: "method_not_allowed" });
 
   const authorization = req.headers.get("Authorization");
   if (!authorization?.startsWith("Bearer ")) return json(401, { error: "authentication_required" });
