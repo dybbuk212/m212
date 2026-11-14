@@ -96,7 +96,7 @@ export function DemoBanner() {
 }
 
 function Header() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const cart = cartStore.use();
   const session = useSession();
   const [mobile, setMobile] = useState(false);
@@ -104,53 +104,52 @@ function Header() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => setMobile(false), [path]);
   const count = cart.lines.reduce((s, l) => s + l.quantity, 0);
+  const fr = locale === "fr";
+  const menuIcons = [Globe, HardDrive, Server, ShieldCheck];
   return (
-    <header className="sticky top-0 z-30 border-b bg-card/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
-        <Logo />
-        <div className="flex-1"><MegaMenu /></div>
-        <div className="hidden md:block"><PrefSelectors /></div>
-        <Link to="/cart" className="relative rounded-md p-2 hover:bg-muted" aria-label={`${t("nav.cart")} (${count})`}>
-          <ShoppingCart className="h-5 w-5" />
-          {count > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-brand-red px-1.5 text-[10px] font-bold text-on-dark">{count}</span>}
-        </Link>
-        {session ? (
-          <div className="hidden items-center gap-2 sm:flex">
-            <ButtonLink to={portalHome(session.role) as "/client/dashboard"} variant="outline" size="sm"><User className="h-4 w-4" />{t("nav.account")}</ButtonLink>
-            <Button variant="ghost" size="sm" onClick={signOut}>{t("nav.logout")}</Button>
-          </div>
-        ) : (
-          <div className="hidden items-center gap-2 sm:flex">
-            <ButtonLink to="/login" variant="ghost" size="sm">{t("nav.login")}</ButtonLink>
-            <ButtonLink to="/register" variant="brand" size="sm">{t("nav.register")}</ButtonLink>
-          </div>
-        )}
-        <button type="button" className="rounded-md p-2 hover:bg-muted lg:hidden" aria-label="Open menu" aria-expanded={mobile} onClick={() => setMobile(true)}><MenuIcon className="h-5 w-5" /></button>
+    <header className="m212-reference-header sticky top-3 z-30 mx-auto w-[calc(100%-2rem)] max-w-[1640px] rounded-full border border-white/75 bg-white/90 shadow-[0_10px_36px_-22px_rgba(18,39,82,.42)] backdrop-blur-xl">
+      <div className="mx-auto flex min-h-[76px] items-center gap-3 px-4 sm:px-6">
+        <div className="shrink-0 border-r border-slate-200 pr-4 sm:pr-6"><Logo /></div>
+        <nav aria-label="Main" className="hidden min-w-0 flex-1 xl:block">
+          <ul className="flex items-center justify-center gap-1">
+            {groups.map((g, i) => {
+              const Icon = menuIcons[i] ?? Globe;
+              return <li key={g.id} className="group relative">
+                <button type="button" className="flex items-center gap-2 rounded-full px-3 py-3 text-sm font-bold text-[#101d45] transition hover:bg-sky-50" aria-haspopup="true">
+                  <Icon className="h-4 w-4" aria-hidden />{g.label}<ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                <div className="invisible absolute left-0 top-full z-50 w-72 translate-y-2 pt-3 opacity-0 transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                  <div className="rounded-2xl border border-slate-100 bg-white p-2 shadow-xl">
+                    {g.links.map(l => <HrefLink key={l.to} href={l.to} className="block rounded-xl px-4 py-3 hover:bg-sky-50"><span className="block text-sm font-bold text-[#101d45]">{l.label}</span><span className="mt-0.5 block text-xs text-slate-500">{l.desc}</span></HrefLink>)}
+                  </div>
+                </div>
+              </li>;
+            })}
+            <li><Link to="/pricing" className="flex items-center rounded-full px-3 py-3 text-sm font-bold text-[#101d45] hover:bg-sky-50">{t("nav.pricing")}</Link></li>
+            <li><Link to="/support" className="flex items-center gap-2 rounded-full px-3 py-3 text-sm font-bold text-[#101d45] hover:bg-sky-50"><LifeBuoy className="h-4 w-4" />{t("nav.support")}</Link></li>
+          </ul>
+        </nav>
+        <div className="ml-auto hidden items-center gap-2 xl:flex">
+          <div className="m212-ref-pill"><PrefSelectors compact /></div>
+          {session ? <ButtonLink to={portalHome(session.role) as "/client/dashboard"} variant="outline" size="md"><User className="h-4 w-4" />{t("nav.account")}<ChevronDown className="h-3 w-3" /></ButtonLink> : <ButtonLink to="/login" variant="outline" size="md"><User className="h-4 w-4" />{fr ? "Mon compte" : "My account"}<ChevronDown className="h-3 w-3" /></ButtonLink>}
+          {session ? <Button variant="ghost" size="sm" onClick={signOut}>{t("nav.logout")}</Button> : <ButtonLink to="/login" variant="ghost" size="sm">{t("nav.login")}</ButtonLink>}
+        </div>
+        <Link to="/cart" className="relative rounded-full p-2 text-[#101d45] hover:bg-sky-50 xl:hidden" aria-label={`${t("nav.cart")} (${count})`}><ShoppingCart className="h-5 w-5"/>{count > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-brand-red px-1.5 text-[10px] font-bold text-white">{count}</span>}</Link>
+        <button type="button" className="rounded-full p-2 text-[#101d45] hover:bg-sky-50 xl:hidden" aria-label="Open menu" aria-expanded={mobile} onClick={() => setMobile(true)}><MenuIcon className="h-6 w-6" /></button>
       </div>
       {mobile && createPortal(
-        <div className="fixed inset-0 z-50 bg-brand-navy-deep/60 lg:hidden" onClick={() => setMobile(false)}>
-          <div role="dialog" aria-label="Menu" className="animate-rise ml-auto h-full w-[88%] max-w-sm overflow-y-auto bg-card p-5" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between"><Logo /><button type="button" aria-label="Close menu" onClick={() => setMobile(false)} className="rounded p-2 hover:bg-muted"><X className="h-5 w-5" /></button></div>
+        <div className="fixed inset-0 z-50 bg-[#10214a]/55 xl:hidden" onClick={() => setMobile(false)}>
+          <div role="dialog" aria-label="Menu" className="animate-rise ml-auto h-full w-[88%] max-w-sm overflow-y-auto bg-white p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between"><Logo /><button type="button" aria-label="Close menu" onClick={() => setMobile(false)} className="rounded p-2 hover:bg-sky-50"><X className="h-5 w-5" /></button></div>
             <PrefSelectors compact />
-            {groups.map((g) => (
-              <div key={g.id} className="mt-5">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{g.label}</p>
-                {g.links.map((l) => <HrefLink key={l.to} href={l.to} className="block rounded px-2 py-2 text-sm font-semibold hover:bg-muted">{l.label}</HrefLink>)}
-              </div>
-            ))}
-            <div className="mt-5 grid gap-2">
-              <ButtonLink to="/pricing" variant="outline">{t("nav.pricing")}</ButtonLink>
-              <ButtonLink to="/support" variant="outline">{t("nav.support")}</ButtonLink>
-              {session ? <><ButtonLink to={portalHome(session.role) as "/client/dashboard"}>{t("nav.account")}</ButtonLink><Button variant="ghost" onClick={signOut}>{t("nav.logout")}</Button></>
-                : <><ButtonLink to="/login" variant="outline">{t("nav.login")}</ButtonLink><ButtonLink to="/register" variant="brand">{t("nav.register")}</ButtonLink></>}
-            </div>
+            {groups.map((g) => <div key={g.id} className="mt-5"><p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">{g.label}</p>{g.links.map(l => <HrefLink key={l.to} href={l.to} className="block rounded-xl px-3 py-3 text-sm font-semibold text-[#101d45] hover:bg-sky-50">{l.label}</HrefLink>)}</div>)}
+            <div className="mt-5 grid gap-2"><ButtonLink to="/pricing" variant="outline">{t("nav.pricing")}</ButtonLink><ButtonLink to="/support" variant="outline">{t("nav.support")}</ButtonLink>{session ? <><ButtonLink to={portalHome(session.role) as "/client/dashboard"}>{t("nav.account")}</ButtonLink><Button variant="ghost" onClick={signOut}>{t("nav.logout")}</Button></> : <><ButtonLink to="/login" variant="outline">{t("nav.login")}</ButtonLink><ButtonLink to="/register" variant="brand">{t("nav.register")}</ButtonLink></>}</div>
           </div>
         </div>, document.body
       )}
     </header>
   );
 }
-
 function Footer() {
   const { t, locale } = useI18n();
   const data = useDb();
