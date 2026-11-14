@@ -47,7 +47,7 @@ export const PORTAL_NAV: Record<"client" | "reseller" | "admin", Group[]> = {
       { to: "/admin/registrars", label: "Registrars", icon: Plug } ] },
     { title: "Infrastructure", items: [
       { to: "/admin/hosting", label: "Hosting accounts", icon: HardDrive }, { to: "/admin/vps", label: "VPS", icon: Cpu }, { to: "/admin/servers", label: "Servers", icon: Server },
-      { to: "/admin/providers", label: "Providers", icon: Boxes } ] },
+      { to: "/admin/superadmin", label: "Super Admin · API control", icon: Boxes } ] },
     { title: "Support", items: [ { to: "/admin/tickets", label: "Tickets", icon: Ticket }, { to: "/admin/support", label: "Departments", icon: LifeBuoy } ] },
     { title: "Content", items: [
       { to: "/admin/cms/pages", label: "Pages", icon: FileText }, { to: "/admin/cms/blog", label: "Blog", icon: Newspaper }, { to: "/admin/cms/menus", label: "Menus", icon: ListTree },
