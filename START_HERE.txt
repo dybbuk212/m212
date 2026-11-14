@@ -1,7 +1,0 @@
-M212-MA-CLOUDFLARE-READY-v2.0
-=============================
-source/            Complete source project. Run:  npm ci && npm run typecheck && npm test && npm run build
-cloudflare-pages/  Verified production build (contents of dist/). Upload this folder with
-                   Cloudflare Pages > Create > Pages > Upload assets. No Git connection required.
-README.md, CLOUDFLARE_DEPLOYMENT.md, BUILD_AND_TEST_REPORT.md  — documentation (copies of the files in source/).
-DEMO MODE: no real registrations, payments, provisioning or authentication. See README.md.
