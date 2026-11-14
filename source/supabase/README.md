@@ -1,37 +1,49 @@
-# M212 CMS production backend foundation
+# M212 Supabase backend foundation
 
-This directory is the production-oriented persistence/security foundation for the existing CMS UI. It does **not** claim that the current React demo UI has been switched from localStorage/IndexedDB to Supabase yet.
+This directory contains the **canonical Supabase project configuration and migrations** for M212. Run Supabase CLI commands from `source/` so the CLI uses `source/supabase/config.toml`.
 
-## Components
+## Applied remote database migrations
 
-- `migrations/20261114000100_cms_core.sql`: CMS content, category, menu, media metadata, revisions, memberships and audit tables; RLS policies; public media bucket.
-- `functions/cms-publish-scheduler/index.ts`: authenticated scheduler endpoint to publish approved pages/posts after their scheduled time.
+The M212 Supabase project currently has four recorded migrations:
 
-## Apply
+1. `20261114080955_m212_lock_down_rls_auto_enable.sql` — revokes public/client execution of the pre-existing RLS event-trigger helper.
+2. `20261114081049_m212_unified_cms_platform_foundation.sql` — creates the unified CMS, organization/membership, provider registry, Vault RPCs, sandbox provider queue, provisioning queue, event/audit tables, storage bucket, editorial workflow, and baseline RLS.
+3. `20261114081252_m212_security_performance_hardening.sql` — moves the CMS role lookup into the private schema, locks trigger-only RPCs, splits overlapping policies, explicitly denies browser access to the provider worker queue, and adds foreign-key indexes.
+4. `20261114081313_m212_auth_role_policy_cleanup.sql` — removes deprecated `auth.role()` use from the CMS trigger and finalizes published-content RLS.
 
-1. Create a Supabase project for M212.MA.
-2. Link the project with the Supabase CLI.
-3. Review and apply the migration: `supabase db push`.
-4. Create the first `cms_memberships` row for a trusted user through a privileged, audited operator process. Never let users self-assign roles.
-5. Configure `CMS_SCHEDULER_SECRET` and the service role key as Edge Function secrets. Never put either in a `VITE_*` variable or browser bundle.
-6. Deploy `cms-publish-scheduler` and configure Supabase Cron/external scheduler to POST to it with `x-cms-scheduler-secret`.
-7. Test RLS using anon, normal authenticated, editor, admin and super-admin identities before importing production content.
+The migration files mirror the SQL recorded by the remote Supabase migration history. Do not restore the retired pre-consolidation migrations: they contained incompatible duplicate definitions for `provider_connections` and `provisioning_jobs`, and the original CMS migration had malformed PL/pgSQL dollar delimiters.
 
-## Role matrix
+## Database areas
 
-| Role | Pages/posts | Menus/categories | Media | Memberships/audit |
-|---|---|---|---|---|
-| super_admin | full | full | full | manage/read |
-| admin | full | full | full | read |
-| editor | create/edit/publish workflow | manage | upload/manage | no |
-| author | create/edit | read | read | no |
-| seo_manager | edit SEO-capable content | read | read | no |
-| media_manager | read | read | manage | no |
+- **CMS:** pages, posts, categories, menus, media metadata, editorial memberships, revisions, audit logs and scheduled publishing fields.
+- **Organizations:** tenant organizations and user memberships with owner/admin/operator/billing/support/customer roles.
+- **Providers:** a unified provider registry with category, sandbox/production metadata, capabilities and Vault secret references. Secret values are never stored in public tables.
+- **Operations:** an idempotent provisioning queue for domains, DNS, hosting, VMs and SSL; a separate read/test-only provider queue constrained to sandbox.
+- **Events/audit:** integration event intake and organization-scoped audit events.
+- **Storage:** public-read CMS media bucket; upload/update/delete require CMS media roles.
 
-RLS is the enforcement boundary; hiding controls in React is not authorization.
+All application tables in the exposed `public` schema have RLS enabled. Security and health advisors were clean immediately after deployment. The performance advisor currently reports unused indexes because this new database has no workload yet.
 
-## Current limitations / required integration work
+## Apply and verify
 
-The current frontend CMS persists content in the demo store and IndexedDB. The next integration change must introduce a typed repository backed by Supabase Auth/PostgREST/Storage, map the existing `CmsPage`, `BlogPost`, `Menu`, and `MediaItem` types to the SQL schema, and remove demo-mode writes from production builds. Do not enable commercial publishing until that adapter and its integration tests are complete.
+From `source/`:
 
-The migration deliberately supports French, English and Arabic content, revision snapshots, canonical/robots metadata, translation groups, editorial states and scheduled publication. Rich-text rendering must sanitize HTML; the existing plain-text renderer should not render untrusted HTML.
+```bash
+supabase migration list
+supabase db push
+```
+
+Use a linked project matching the M212 project ref. Do not use `supabase db reset` against production. Review remote migration history before any drift repair.
+
+## Current deployment boundary
+
+The database foundation is deployed, but the React application still uses its clearly labelled demo/local persistence for business workflows. A typed Supabase repository/auth integration and end-to-end authorization tests remain required before switching the UI to production persistence.
+
+The remote project currently has no Auth users, no CMS memberships, no organizations, and no provider connections. Create the first trusted Auth user and bootstrap the first `super_admin` through a privileged operator process; do not expose self-service role assignment.
+
+Edge Functions are not deployed yet. Before deployment, configure the required server-side secrets securely:
+- `PROVIDER_WORKER_SECRET` for the provider worker.
+- `CMS_SCHEDULER_SECRET` for the CMS publish scheduler.
+- Supabase's project URL and service role key are supplied by the Edge Functions runtime; never place service-role values in `VITE_*` variables.
+
+The provider admin function also needs its allowed production dashboard origins set deliberately. No live payment, registrar, hosting, VM or SSL provisioning is enabled by this database migration.
