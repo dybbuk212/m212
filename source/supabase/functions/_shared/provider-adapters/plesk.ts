@@ -1,4 +1,4 @@
-import { validatePublicHttpsEndpoint, type ProviderAdapter, type ProviderConnection, type AdapterTestResult } from "../_shared/provider-adapters/types.ts";
+import { validatePublicHttpsEndpoint, type ProviderAdapter, type ProviderConnection, type AdapterTestResult } from "./types.ts";
 
 export const pleskAdapter: ProviderAdapter = {
   category: "plesk",

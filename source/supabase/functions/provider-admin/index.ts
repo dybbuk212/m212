@@ -108,7 +108,8 @@ Deno.serve(async (req) => {
       .select("id,provider_key,category,environment,endpoint_url,account_reference,username,secret_id,config")
       .eq("id", id).maybeSingle();
     if (error || !connection) return json(req, 404, { error: "provider_connection_not_found" });
-    const adapter = getProviderAdapter(connection.category as ProviderCategory);
+    if (connection.environment !== "sandbox") return json(req, 409, { error: "sandbox_environment_required" });
+    const adapter = getProviderAdapter(connection.category as ProviderCategory, connection.provider_key);
     if (!adapter) return json(req, 409, {
       error: "provider_adapter_not_available",
       message: `No adapter is installed for ${connection.category}. Add the provider vendor/model before testing or provisioning.`,
