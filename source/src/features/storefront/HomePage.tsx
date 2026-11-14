@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Cpu, Globe, HardDrive, Lock, Mail, Server } from "lucide-react";
 import { Card, ButtonLink } from "@/components/ui";
+import { Logo } from "@/components/Logo";
 import { useI18n, useMoney } from "@/lib/i18n";
 import { useSeo } from "@/lib/seo";
 import { useDb } from "@/lib/store";
