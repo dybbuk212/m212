@@ -3,6 +3,7 @@ import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { createAppRouter } from "@/router";
+import { ThemeProvider } from "@/design-system/theme/ThemeProvider";
 import { db } from "@/lib/store";
 import { cartStore, clearCart } from "@/lib/cart";
 import { prefs } from "@/lib/i18n";
@@ -11,7 +12,7 @@ import { sessionStore, DEMO_ACCOUNTS } from "@/lib/auth";
 async function renderAt(path: string) {
   const router = createAppRouter({ history: createMemoryHistory({ initialEntries: [path] }) });
   await act(async () => { await router.load(); });
-  render(<RouterProvider router={router} />);
+  render(<ThemeProvider><RouterProvider router={router} /></ThemeProvider>);
   return router;
 }
 
@@ -20,7 +21,7 @@ beforeEach(() => { db.reset(); clearCart(); sessionStore.set(null); prefs.set({ 
 describe("storefront", () => {
   it("home page renders with search and navigation", async () => {
     await renderAt("/");
-    expect(await screen.findByRole("heading", { level: 1, name: /Find Your Domain and Hosting in One Place/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: /Find Your Domain/ })).toBeInTheDocument();
     expect(screen.getByRole("search")).toBeInTheDocument();
     expect(screen.getAllByText(/DEMO MODE/).length).toBeGreaterThan(0);
   });
@@ -49,7 +50,7 @@ describe("storefront", () => {
     const user = userEvent.setup();
     await renderAt("/");
     await user.selectOptions((await screen.findAllByLabelText("Language"))[0]!, "fr");
-    expect(await screen.findByRole("heading", { level: 1, name: /Réservez Votre Domaine et Hébergement Gratuit/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: /Réservez Votre Domaine/ })).toBeInTheDocument();
   });
   it("unknown routes render the 404 page", async () => {
     await renderAt("/this-does-not-exist");
