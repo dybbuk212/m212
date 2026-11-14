@@ -8,10 +8,14 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: cors });
   const expected = Deno.env.get("CMS_SCHEDULER_SECRET");
   const supplied = req.headers.get("x-cms-scheduler-secret");
-  if (!expected || !supplied || supplied.length !== expected.length ||
-      !crypto.subtle.timingSafeEqual(new TextEncoder().encode(supplied), new TextEncoder().encode(expected))) {
-    return new Response("Unauthorized", { status: 401, headers: cors });
-  }
+  const encoder = new TextEncoder();
+  const digest = async (value: string) => new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(value)));
+  const [expectedDigest, suppliedDigest] = expected && supplied
+    ? await Promise.all([digest(expected), digest(supplied)])
+    : [new Uint8Array(32), new Uint8Array(32)];
+  let mismatch = expected && supplied ? 0 : 1;
+  for (let i = 0; i < expectedDigest.length; i++) mismatch |= expectedDigest[i] ^ suppliedDigest[i];
+  if (mismatch !== 0) return new Response("Unauthorized", { status: 401, headers: cors });
 
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
