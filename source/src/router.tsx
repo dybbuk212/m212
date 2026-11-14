@@ -129,7 +129,7 @@ const adminRoutes = [
   a("dashboard", AdminDashboard), a("customers", AdminCustomers), a("products", AdminProducts), a("categories", AdminCategories), a("domains", AdminDomains), a("registrars", AdminRegistrars),
   a("hosting", AdminHosting), a("vps", AdminVps), a("servers", AdminServers), a("orders", AdminOrders), a("invoices", AdminInvoices), a("payments", AdminPayments), a("subscriptions", AdminSubscriptions),
   a("tickets", AdminTickets), a("support", AdminSupportDepartments), a("cms/pages", CmsPagesList), pageEditor, a("cms/blog", CmsBlogList), postEditor, a("cms/menus", CmsMenus), a("cms/media", CmsMedia),
-  a("seo", AdminSeo), a("coupons", AdminCoupons), a("resellers", AdminResellers), a("analytics", AdminAnalytics), a("providers", AdminProviders), a("settings", AdminSettings), a("security", AdminSecurity), a("audit-logs", AdminAuditLogs),
+  a("seo", AdminSeo), a("coupons", AdminCoupons), a("resellers", AdminResellers), a("analytics", AdminAnalytics), a("superadmin", AdminProviders), a("providers", AdminProviders), a("settings", AdminSettings), a("security", AdminSecurity), a("audit-logs", AdminAuditLogs),
 ] as const;
 
 export const routeTree = rootRoute.addChildren([
