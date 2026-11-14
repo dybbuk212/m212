@@ -1,0 +1,23 @@
+name: M212 provider sandbox checks
+on:
+  pull_request:
+    paths: ["source/supabase/**", ".github/workflows/provider-sandbox.yml"]
+  push:
+    branches: [main]
+    paths: ["source/supabase/**", ".github/workflows/provider-sandbox.yml"]
+permissions:
+  contents: read
+jobs:
+  provider-sandbox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Format
+        run: deno fmt --check source/supabase/functions/_shared/provider-adapters source/supabase/functions/provider-worker
+      - name: Type-check
+        run: deno check source/supabase/functions/provider-admin/index.ts source/supabase/functions/provider-worker/index.ts source/supabase/functions/_shared/provider-adapters/registry_test.ts
+      - name: Adapter tests
+        run: deno test --allow-net source/supabase/functions/_shared/provider-adapters/registry_test.ts
