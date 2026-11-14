@@ -59,6 +59,14 @@ Deno.serve(async (req) => {
     return json(req, 200, { events: data ?? [] });
   }
 
+  if (input.action === "activity") {
+    const { data, error } = await admin.from("cms_audit_logs")
+      .select("id,action,entity_type,entity_id,metadata,created_at")
+      .eq("entity_type", "provider_connection").order("created_at", { ascending: false }).limit(50);
+    if (error) return json(req, 500, { error: "provider_activity_failed" });
+    return json(req, 200, { events: data ?? [] });
+  }
+
   if (input.action === "save") {
     const providerKey = String(input.provider_key ?? "").trim().toLowerCase();
     const displayName = String(input.display_name ?? "").trim();
