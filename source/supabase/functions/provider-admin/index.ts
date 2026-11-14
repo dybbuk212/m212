@@ -16,7 +16,7 @@ const cors = (req: Request) => {
 const json = (req: Request, status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors(req), "Content-Type": "application/json", "Cache-Control": "no-store" } });
 const allowedCategories = new Set(["registrar", "plesk", "hypervisor", "dns", "payment", "email", "storage"]);
-const allowedEnvironments = new Set(["sandbox", "production"]);
+const allowedEnvironments = new Set(["sandbox"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
@@ -51,6 +51,14 @@ Deno.serve(async (req) => {
 
   let input: Record<string, unknown>;
   try { input = await req.json(); } catch { return json(req, 400, { error: "invalid_json" }); }
+  if (input.action === "activity") {
+    const { data, error } = await admin.from("cms_audit_logs")
+      .select("id,action,entity_type,entity_id,metadata,created_at")
+      .eq("entity_type", "provider_connection").order("created_at", { ascending: false }).limit(50);
+    if (error) return json(req, 500, { error: "provider_activity_failed" });
+    return json(req, 200, { events: data ?? [] });
+  }
+
   if (input.action === "save") {
     const providerKey = String(input.provider_key ?? "").trim().toLowerCase();
     const displayName = String(input.display_name ?? "").trim();
@@ -81,7 +89,7 @@ Deno.serve(async (req) => {
       secretId = storedSecret as string;
     }
     const record: Record<string, unknown> = {
-      provider_key: providerKey, display_name: displayName, category, environment,
+      provider_key: providerKey, display_name: displayName, category, environment: "sandbox",
       endpoint_url: endpoint, account_reference: accountReference, username, config,
       status: secret || input.id ? "configured" : "not_verified",
       updated_by: userData.user.id, updated_at: new Date().toISOString(),
