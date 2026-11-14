@@ -37,7 +37,7 @@ export function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cats.map((c) => (
             <Link key={c.to} to={c.to} className="group">
-              <Card className="h-full p-6 transition group-hover:-translate-y-0.5 group-hover:shadow-pop">
+              <Card className="m212-product-card h-full p-6 transition group-hover:shadow-pop">
                 <c.icon className="h-7 w-7 text-brand-red" aria-hidden />
                 <h3 className="mt-4 text-lg font-extrabold">{c.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{c.body}</p>
