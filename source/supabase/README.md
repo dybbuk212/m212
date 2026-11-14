@@ -4,13 +4,14 @@ This directory contains the **canonical Supabase project configuration and migra
 
 ## Applied remote database migrations
 
-The M212 Supabase project currently has five recorded migrations:
+The M212 Supabase project currently has six recorded migrations:
 
 1. `20261114080955_m212_lock_down_rls_auto_enable.sql` — revokes public/client execution of the pre-existing RLS event-trigger helper.
 2. `20261114081049_m212_unified_cms_platform_foundation.sql` — creates the unified CMS, organization/membership, provider registry, Vault RPCs, sandbox provider queue, provisioning queue, event/audit tables, storage bucket, editorial workflow, and baseline RLS.
 3. `20261114081252_m212_security_performance_hardening.sql` — moves the CMS role lookup into the private schema, locks trigger-only RPCs, splits overlapping policies, explicitly denies browser access to the provider worker queue, and adds foreign-key indexes.
 4. `20261114081313_m212_auth_role_policy_cleanup.sql` — removes deprecated `auth.role()` use from the CMS trigger and finalizes published-content RLS.
 5. `20261114081536_m212_vault_rpc_auth_claim_cleanup.sql` — uses the signed JWT role claim for service-role-only Vault RPC authorization.
+6. `20261114081708_m212_public_content_rls_role_split.sql` — separates anonymous published-content reads from authenticated CMS reads so public clients do not need private helper privileges.
 
 The migration files mirror the SQL recorded by the remote Supabase migration history. Do not restore the retired pre-consolidation migrations: they contained incompatible duplicate definitions for `provider_connections` and `provisioning_jobs`, and the original CMS migration had malformed PL/pgSQL dollar delimiters.
 
