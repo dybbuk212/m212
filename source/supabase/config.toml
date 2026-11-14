@@ -1,2 +1,5 @@
 [functions.cms-publish-scheduler]
 verify_jwt = false
+
+[functions.provider-admin]
+verify_jwt = true
