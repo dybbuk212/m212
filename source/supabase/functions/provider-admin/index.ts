@@ -76,6 +76,7 @@ Deno.serve(async (req) => {
     const accountReference = input.account_reference ? String(input.account_reference).trim() : null;
     const username = input.username ? String(input.username).trim() : null;
     const secret = typeof input.secret === "string" ? input.secret : "";
+    if (environment !== "sandbox") return json(req, 409, { error: "production_configuration_locked" });
     const config = input.config && typeof input.config === "object" && !Array.isArray(input.config) ? input.config : {};
     if (!/^[a-z0-9][a-z0-9._-]{1,63}$/.test(providerKey) || displayName.length < 2 || displayName.length > 120 ||
         !allowedCategories.has(category) || !allowedEnvironments.has(environment)) return json(req, 422, { error: "invalid_provider_metadata" });
