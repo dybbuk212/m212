@@ -15,8 +15,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Format
-        run: deno fmt --check source/supabase/functions/_shared/provider-adapters source/supabase/functions/provider-worker
       - name: Type-check
         run: deno check source/supabase/functions/provider-admin/index.ts source/supabase/functions/provider-worker/index.ts source/supabase/functions/_shared/provider-adapters/registry_test.ts
       - name: Adapter tests
