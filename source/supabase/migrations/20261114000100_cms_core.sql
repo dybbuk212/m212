@@ -215,9 +215,13 @@ set search_path = '' as $
 declare
   actor_role text;
 begin
-  select m.role into actor_role
-  from public.cms_memberships m
-  where m.user_id = (select auth.uid());
+  if (select auth.role()) = 'service_role' then
+    actor_role := 'super_admin';
+  else
+    select m.role into actor_role
+    from public.cms_memberships m
+    where m.user_id = (select auth.uid());
+  end if;
 
   if actor_role is null then
     raise exception 'CMS membership required' using errcode = '42501';
