@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Cpu, Globe, HardDrive, Lock, Mail, Server } from "lucide-react";
 import { Card, ButtonLink } from "@/components/ui";
+import { Logo } from "@/components/Logo";
 import { useI18n, useMoney } from "@/lib/i18n";
 import { useSeo } from "@/lib/seo";
 import { useDb } from "@/lib/store";
 import { effectiveRegisterPrice } from "@/lib/domain";
-import { DEMO_TESTIMONIALS, DomainSearchBox, Faq, PageHero, PlanGrid, Section, SectionHeading, ServerVisual, Testimonials, TrustStrip, PriceFrom } from "./shared";
+import { DEMO_TESTIMONIALS, DomainSearchBox, Faq, PlanGrid, Section, SectionHeading, ServerVisual, Testimonials, TrustStrip, PriceFrom } from "./shared";
 
 export function HomePage() {
-  const { t, locale } = useI18n();
+  const { locale } = useI18n();
   const fr = locale === "fr";
   const data = useDb();
   const money = useMoney();
@@ -25,19 +26,50 @@ export function HomePage() {
   const popular = [".ma", ".com", ".shop", ".online", ".io", ".net"].map((x) => data.tlds.find((t) => t.tld === x)).filter((x) => x !== undefined);
   return (
     <>
-      <PageHero eyebrow={fr ? "Domaines · Hébergement · Cloud" : "Domains · Hosting · Cloud"} title={t("home.title")} body={t("home.subtitle")} aside={<ServerVisual />}>
-        <DomainSearchBox onDark />
-        <ul className="mt-5 flex flex-wrap gap-2">
-          {popular.map((p) => <li key={p.tld} className="rounded-full border border-on-dark/20 px-3 py-1 text-sm text-on-dark"><strong>{p.tld}</strong> <span className="text-on-dark-muted">{money(effectiveRegisterPrice(p))}</span></li>)}
-        </ul>
-      </PageHero>
+      <section className="m212-reference-hero relative isolate overflow-hidden">
+        <div className="m212-reference-cloud m212-cloud-a" aria-hidden />
+        <div className="m212-reference-cloud m212-cloud-b" aria-hidden />
+        <div className="m212-reference-wave" aria-hidden />
+        <div className="relative mx-auto grid min-h-[min(790px,calc(100svh-110px))] max-w-[1640px] items-center gap-6 px-5 pb-12 pt-12 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,.78fr)] lg:px-14 lg:py-16">
+          <div className="relative z-10 max-w-[850px]">
+            <div className="mb-7 flex items-center gap-4 sm:gap-6">
+              <div className="hidden shrink-0 rounded-[2rem] bg-white/35 p-3 shadow-sm ring-1 ring-white/70 sm:block"><Logo /></div>
+              <p className="m212-reference-kicker">{fr ? "Domaines · Hébergement · Cloud" : "Domains · Hosting · Cloud"}</p>
+            </div>
+            <h1 className="max-w-[900px] text-[clamp(2.55rem,5.4vw,5.6rem)] font-extrabold leading-[1.04] tracking-[-.045em] text-[#101d45]">
+              {fr ? <>Réservez Votre <span className="m212-reference-highlight">Domaine</span><br/>et Hébergement Gratuit</> : <>Find Your <span className="m212-reference-highlight">Domain</span><br/>and Hosting in One Place</>}
+            </h1>
+            <p className="mt-6 max-w-3xl text-xl font-medium leading-snug text-[#152b57] sm:text-2xl lg:text-[2rem]">
+              {fr ? "En Quelques Secondes — Votre présence en ligne, simplement." : "Your online presence, launched in just a few seconds."}
+            </p>
+            <div className="m212-reference-search mt-9 max-w-[900px] rounded-full bg-white p-2.5 sm:p-3">
+              <DomainSearchBox size="lg" />
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-2.5 text-sm text-[#243b65]">
+              <span className="font-bold">{fr ? "Extensions populaires :" : "Popular extensions:"}</span>
+              {popular.slice(0,5).map(p => <Link key={p.tld} to="/domains/pricing" className="m212-reference-tld">{p.tld}<span className="ml-2 text-xs font-medium text-slate-500">{money(effectiveRegisterPrice(p))}</span></Link>)}
+            </div>
+          </div>
+          <div className="relative z-[1] mx-auto flex w-full max-w-[620px] items-end justify-center self-end lg:self-center">
+            <div className="m212-reference-art-panel w-full">
+              <div className="m212-reference-server-art" aria-hidden><ServerVisual /></div>
+              <div className="m212-reference-person" aria-hidden>
+                <div className="m212-person-cap"><span>✦</span></div>
+                <div className="m212-person-head"><span className="m212-person-hair"/><span className="m212-person-smile"/></div>
+                <div className="m212-person-body"><div className="m212-person-shirt"/><div className="m212-person-laptop"/></div>
+                <div className="m212-person-chair"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <TrustStrip />
       <Section>
         <SectionHeading eyebrow={fr ? "Produits" : "Products"} title={fr ? "Tout pour être en ligne" : "Everything to get online"} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cats.map((c) => (
             <Link key={c.to} to={c.to} className="group">
-              <Card className="h-full p-6 transition group-hover:-translate-y-0.5 group-hover:shadow-pop">
+              <Card className="m212-product-card h-full p-6 transition group-hover:shadow-pop">
                 <c.icon className="h-7 w-7 text-brand-red" aria-hidden />
                 <h3 className="mt-4 text-lg font-extrabold">{c.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{c.body}</p>
