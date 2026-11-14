@@ -15,7 +15,8 @@ export const proxmoxAdapter:ProviderAdapter={
 export const stripeAdapter:ProviderAdapter={
  category:"payment",
  async test(c:ProviderConnection,secret:string){
-  if(c.environment!=="sandbox"||!secret.startsWith("sk_test_")) throw new Error("stripe_test_key_required");
+  if(c.environment!=="sandbox") throw new Error("sandbox_environment_required");
+  if(!secret.startsWith("sk_test_")) throw new Error("stripe_test_key_required");
   const base=await validatePublicHttpsEndpoint(c.endpoint_url||"https://api.stripe.com");
   const response=await get(new URL("/v1/account",base),{Authorization:`Bearer ${secret}`});
   return result("stripe",response.ok,response.ok?["connection.test","account.read"]:[],response.ok?undefined:"stripe_api_probe_failed");
