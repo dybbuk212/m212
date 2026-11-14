@@ -6,9 +6,8 @@ const allowedOrigins = (Deno.env.get("ADMIN_DASHBOARD_ORIGINS") ?? "https://m212
   .split(",").map((value) => value.trim()).filter(Boolean);
 const cors = (req: Request) => {
   const origin = req.headers.get("Origin") ?? "";
-  const allowedOrigin = allowedOrigins.includes(origin) ? origin : "null";
   return {
-    "Access-Control-Allow-Origin": allowedOrigin,
+    ...(allowedOrigins.includes(origin) ? { "Access-Control-Allow-Origin": origin } : {}),
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Vary": "Origin",
