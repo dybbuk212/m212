@@ -3,7 +3,7 @@ import { validatePublicHttpsEndpoint, type ProviderAdapter, type ProviderConnect
 export const pleskAdapter: ProviderAdapter = {
   category: "plesk",
   async test(connection: ProviderConnection, secret: string): Promise<AdapterTestResult> {
-    const base = validatePublicHttpsEndpoint(connection.endpoint_url);
+    const base = await validatePublicHttpsEndpoint(connection.endpoint_url);
     if (!secret || secret.length < 8) throw new Error("plesk_api_key_missing");
     const url = new URL("/api/v2/domains?limit=1", base);
     const response = await fetch(url, {
